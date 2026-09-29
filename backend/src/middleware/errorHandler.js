@@ -2,35 +2,58 @@ import { ZodError } from 'zod';
 import { AppError } from '../utils/AppError.js';
 import { env } from '../config/env.js';
 
-export const notFound = (req, _res, next) => next(AppError.notFound(`Route ${req.method} ${req.originalUrl} not found`));
+const fail = (res, status, message, extra = {}) =>
+  res.status(status).json({ success: false, message, ...extra });
 
-// eslint-disable-next-line no-unused-vars
-export const errorHandler = (err, _req, res, _next) => {
+export const notFound = (req, _res, next) =>
+  next(AppError.notFound(`Route ${req.method} ${req.originalUrl} not found`));
+
+export const errorHandler = (err, req, res, _next) => {
   if (err instanceof ZodError) {
-    return res.status(400).json({
-      message: 'Please fix the highlighted fields',
+    return fail(res, 400, 'Please fix the highlighted fields', {
       errors: err.errors.map((e) => ({ field: e.path.join('.'), message: e.message })),
     });
   }
 
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({ message: err.message, ...(err.details && { errors: err.details }) });
+    return fail(
+      res,
+      err.statusCode,
+      err.message,
+      err.details ? { errors: err.details } : {},
+    );
   }
 
-  // PostgreSQL constraint violations -> friendly client errors
   if (err.code === '23505') {
-    const field = /email/i.test(err.constraint || '') ? 'email' : undefined;
-    const message = field ? 'That email is already registered' : 'This record already exists';
-    return res.status(409).json({ message, ...(field && { errors: [{ field, message }] }) });
+    const isEmail = /email/i.test(err.constraint || '');
+    const message = isEmail
+      ? 'That email is already registered'
+      : 'This record already exists';
+
+    return fail(
+      res,
+      409,
+      message,
+      isEmail ? { errors: [{ field: 'email', message }] } : {},
+    );
   }
-  if (err.code === '23503') return res.status(400).json({ message: 'Referenced record does not exist' });
-  if (err.code === '23514') return res.status(400).json({ message: 'A value is outside the allowed range' });
 
-  if (err.type === 'entity.parse.failed') return res.status(400).json({ message: 'Malformed JSON body' });
+  if (err.code === '23503') {
+    return fail(res, 400, 'Referenced record does not exist');
+  }
 
-  console.error(err);
-  return res.status(500).json({
-    message: 'Something went wrong on our side',
+  if (err.code === '23514') {
+    return fail(res, 400, 'A value is outside the allowed range');
+  }
+
+  if (err.type === 'entity.parse.failed') {
+    return fail(res, 400, 'Malformed JSON body');
+  }
+
+  req.log?.error({ err }, 'Unhandled error');
+
+  return fail(res, 500, 'Something went wrong on our side', {
+    requestId: req.id,
     ...(!env.isProd && { detail: err.message }),
   });
 };
