@@ -25,3 +25,10 @@ export const listStores = async (req, res) => {
 
 export const createStore = async (req, res) =>
   ok(res, await adminService.createStore(req.body), { status: 201 });
+
+export const changeRole = async (req, res) =>
+  ok(
+    res,
+    await adminService.changeUserRole(req.user.id, req.params.id, req.body.role),
+    { message: 'Role updated' },
+  );

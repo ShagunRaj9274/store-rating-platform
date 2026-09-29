@@ -18,6 +18,7 @@ export const adminApi = {
   dashboard: () => unwrap(api.get('/admin/dashboard')),
   listUsers: (params) => unwrapList(api.get('/admin/users', { params: clean(params) })),
   getUser: (id) => unwrap(api.get(`/admin/users/${id}`)),
+  changeRole: (id, role) => unwrap(api.patch("/admin/users/" + id + "/role", { role })),
   createUser: (body) => unwrap(api.post('/admin/users', body)),
   availableOwners: () => unwrap(api.get('/admin/owners/available')),
   listStores: (params) => unwrapList(api.get('/admin/stores', { params: clean(params) })),

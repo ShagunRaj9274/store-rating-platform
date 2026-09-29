@@ -1,4 +1,4 @@
-import { query } from '../../db/pool.js';
+import { query, withTransaction } from '../../db/pool.js';
 import { AppError } from '../../utils/AppError.js';
 import { buildWhere, buildOrderBy, paginate, buildMeta } from '../../utils/queryBuilder.js';
 import { hashPassword } from '../auth/auth.service.js';
@@ -186,4 +186,27 @@ export async function createStore({ name, email, address, ownerId }) {
     [name, email, address, ownerId ?? null],
   );
   return toStore({ ...rows[0], avg_rating: null, rating_count: 0 });
+}
+
+export async function changeUserRole(actorId, userId, role) {
+  if (actorId === userId) throw AppError.badRequest("You can't change your own role");
+
+  return withTransaction(async (client) => {
+    const { rows } = await client.query(
+      'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, name, email, address, role, created_at',
+      [role, userId],
+    );
+
+    if (!rows[0]) throw AppError.notFound('User not found');
+
+    // An account that stops being an owner can't keep a store.
+    if (role !== 'OWNER') {
+      await client.query(
+        'UPDATE stores SET owner_id = NULL WHERE owner_id = $1',
+        [userId],
+      );
+    }
+
+    return toUser(rows[0]);
+  });
 }

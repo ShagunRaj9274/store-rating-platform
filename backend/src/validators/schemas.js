@@ -53,6 +53,7 @@ export const changePasswordSchema = z
   });
 
 export const createUserSchema = registerSchema.extend({ role: roleRule });
+export const changeRoleSchema = z.object({ role: roleRule });
 
 export const createStoreSchema = z.object({
   name: nameRule,
