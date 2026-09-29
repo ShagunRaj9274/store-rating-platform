@@ -1,8 +1,10 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import morgan from 'morgan';
+import { randomUUID } from 'node:crypto';
+import pinoHttp from 'pino-http';
 import { env } from './config/env.js';
+import { logger } from './utils/logger.js';
 import { query } from './db/pool.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
@@ -24,7 +26,20 @@ app.use(
   }),
 );
 app.use(express.json({ limit: '10kb' }));
-if (!env.isProd) app.use(morgan('dev'));
+
+app.use(
+  pinoHttp({
+    logger,
+    genReqId: (req, res) => {
+      const id = req.headers['x-request-id'] || randomUUID();
+      res.setHeader('X-Request-Id', id);
+      return id;
+    },
+    autoLogging: {
+      ignore: (req) => req.url === '/api/health',
+    },
+  }),
+);
 
 app.get('/api/health', async (_req, res) => {
   try {
