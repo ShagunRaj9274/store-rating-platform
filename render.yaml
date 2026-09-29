@@ -1,0 +1,28 @@
+# Render Blueprint for the API (optional — you can also create the service by hand).
+services:
+  - type: web
+    name: store-rating-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci
+    # Migrations and seed are idempotent, so running them on every boot is safe.
+    startCommand: npm run db:setup && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: CLIENT_URL
+        sync: false
+      - key: SEED_ADMIN_EMAIL
+        value: admin@storerating.com
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
