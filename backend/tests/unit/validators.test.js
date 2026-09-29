@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { passwordRule, nameRule, addressRule, emailRule, ratingSchema } from '../src/validators/schemas.js';
+import { passwordRule, nameRule, addressRule, emailRule, ratingSchema } from '../../src/validators/schemas.js';
 
 test('password: accepts 8–16 chars with an uppercase and a special character', () => {
   assert.ok(passwordRule.safeParse('Passw0rd!').success);

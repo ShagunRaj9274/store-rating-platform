@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildWhere, buildOrderBy, escapeLike, paginate } from '../src/utils/queryBuilder.js';
+import { buildWhere, buildOrderBy, escapeLike, paginate } from '../../src/utils/queryBuilder.js';
 
 const MAP = { name: { sql: 'u.name' }, role: { sql: 'u.role', exact: true }, q: { sql: ['s.name', 's.address'] } };
 
