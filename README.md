@@ -2,7 +2,7 @@
 
 A full-stack web app where shoppers rate stores from 1 to 5, store owners see how their store is doing, and administrators manage everything. One login, three roles, each with its own experience.
 
-**Live demo:** _add your Vercel link here_ · **API:** _add your Render link here_
+**Live demo:** https://store-rating-platform-xi-three.vercel.app · **API:** https://store-rating-api-l2br.onrender.com
 
 | Role | Email | Password |
 |---|---|---|
@@ -330,3 +330,4 @@ git push
 - Only normal users submit ratings; admins and owners can't rate.
 - Admins can change their own password too.
 - Emails are stored in lowercase and compared case-insensitively.
+
