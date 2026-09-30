@@ -2,6 +2,9 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yaml';
 import pinoHttp from 'pino-http';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
@@ -14,8 +17,17 @@ import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 export const app = express();
 
+// Swagger/OpenAPI documentation
+const openapi = YAML.parse(
+  readFileSync(new URL('../docs/openapi.yaml', import.meta.url), 'utf8'),
+);
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapi));
+
 app.set('trust proxy', 1); // correct client IPs behind Render/Railway proxies (for rate limiting)
+
 app.use(helmet());
+
 app.use(
   cors({
     origin(origin, cb) {
@@ -25,6 +37,7 @@ app.use(
     },
   }),
 );
+
 app.use(express.json({ limit: '10kb' }));
 
 app.use(
