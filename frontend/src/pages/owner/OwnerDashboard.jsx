@@ -14,7 +14,6 @@ export default function OwnerDashboard() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     ownerApi
       .dashboard(sort)
       .then((d) => active && setData(d))

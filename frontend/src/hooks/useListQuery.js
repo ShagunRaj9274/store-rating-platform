@@ -16,7 +16,6 @@ export function useListQuery(fetcher, { sortBy, order = 'asc', filters: initialF
 
   useEffect(() => {
     let active = true;
-    setState((s) => ({ ...s, loading: true, error: '' }));
     fetcher({ ...debouncedFilters, ...sort, page, limit })
       .then((res) => active && setState({ rows: res.data, meta: res.meta, loading: false, error: '' }))
       .catch((err) => active && setState((s) => ({ ...s, loading: false, error: getErrorMessage(err) })));

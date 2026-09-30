@@ -33,8 +33,6 @@ export default function AdminUserDetail() {
     }
   };
   useEffect(() => {
-    setUser(null);
-    setError('');
     adminApi.getUser(id).then(setUser).catch((err) => setError(getErrorMessage(err)));
   }, [id]);
 
