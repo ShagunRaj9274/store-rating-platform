@@ -9,4 +9,9 @@ export default defineConfig({
     // so no CORS setup or VITE_API_URL is needed locally.
     proxy: { '/api': 'http://localhost:5000' },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.js',
+  },
 });
