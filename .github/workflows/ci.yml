@@ -48,6 +48,14 @@ jobs:
       - name: Run migrations and seed database
         run: npm run db:setup
 
+      - name: Create test environment file
+        run: |
+          printf '%s\n' \
+            'DATABASE_URL=postgres://postgres:postgres@localhost:5432/store_rating_test' \
+            'JWT_SECRET=ci-secret' \
+            'NODE_ENV=test' \
+            > .env.test
+
       - name: Run coverage
         run: npm run coverage
 
@@ -85,4 +93,3 @@ jobs:
       - run: npm test
 
       - run: npm run build
-
