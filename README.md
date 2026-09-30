@@ -1,8 +1,13 @@
-# Ratebook — Store Rating Platform
+﻿# Ratebook â€” Store Rating Platform
+
+![CI](https://github.com/ShagunRaj9274/store-rating-platform/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-80%25%2B-brightgreen)
+![Frontend](https://img.shields.io/website?url=https%3A%2F%2Fstore-rating-platform-xi-three.vercel.app&label=frontend)
+![API](https://img.shields.io/website?url=https%3A%2F%2Fstore-rating-api-l2br.onrender.com%2Fapi%2Fhealth&label=api)
 
 A full-stack web app where shoppers rate stores from 1 to 5, store owners see how their store is doing, and administrators manage everything. One login, three roles, each with its own experience.
 
-**Live demo:** https://store-rating-platform-xi-three.vercel.app · **API:** https://store-rating-api-l2br.onrender.com
+**Live demo:** https://store-rating-platform-xi-three.vercel.app Â· **API:** https://store-rating-api-l2br.onrender.com
 
 | Role | Email | Password |
 |---|---|---|
@@ -27,7 +32,7 @@ The login page has one-click buttons that fill in these accounts.
 **Normal user**
 - Self-service sign-up and login
 - Browse all stores, search by name and by address, sort by name, address, overall rating or your rating
-- Submit a 1–5 star rating inline and change it any time (optimistic UI with rollback on failure)
+- Submit a 1â€“5 star rating inline and change it any time (optimistic UI with rollback on failure)
 - Change password
 
 **Store owner**
@@ -62,33 +67,33 @@ The login page has one-click buttons that fill in these accounts.
 
 ```
 store-rating-platform/
-├── backend/
-│   ├── src/
-│   │   ├── config/env.js            # env loading + validation
-│   │   ├── db/
-│   │   │   ├── schema.sql           # tables, constraints, indexes, triggers, view
-│   │   │   ├── migrate.js           # idempotent migration runner
-│   │   │   ├── seed.js              # demo data (skips if already seeded)
-│   │   │   └── pool.js              # pg pool + transaction helper
-│   │   ├── middleware/              # auth (JWT + role guard), validation, errors
-│   │   ├── modules/                 # feature modules: routes → controller → service
-│   │   │   ├── auth/  admin/  stores/  owner/
-│   │   ├── utils/queryBuilder.js    # safe dynamic WHERE / ORDER BY / pagination
-│   │   ├── validators/schemas.js    # Zod schemas (single source of truth)
-│   │   ├── app.js                   # express app
-│   │   └── server.js                # http server + graceful shutdown
-│   └── tests/                       # unit tests
-├── frontend/
-│   └── src/
-│       ├── api/                     # axios client + typed service functions
-│       ├── context/                 # AuthContext, ToastContext
-│       ├── hooks/useListQuery.js    # filters + sorting + pagination state
-│       ├── components/              # DataTable, StarRating, FormField, Modal…
-│       ├── pages/                   # auth, admin, user, owner
-│       └── utils/validation.js      # mirrors backend rules
-├── docker-compose.yml               # local PostgreSQL
-├── render.yaml                      # Render blueprint for the API
-└── .github/workflows/ci.yml
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ src/
+â”‚   â”‚   â”œâ”€â”€ config/env.js            # env loading + validation
+â”‚   â”‚   â”œâ”€â”€ db/
+â”‚   â”‚   â”‚   â”œâ”€â”€ schema.sql           # tables, constraints, indexes, triggers, view
+â”‚   â”‚   â”‚   â”œâ”€â”€ migrate.js           # idempotent migration runner
+â”‚   â”‚   â”‚   â”œâ”€â”€ seed.js              # demo data (skips if already seeded)
+â”‚   â”‚   â”‚   â””â”€â”€ pool.js              # pg pool + transaction helper
+â”‚   â”‚   â”œâ”€â”€ middleware/              # auth (JWT + role guard), validation, errors
+â”‚   â”‚   â”œâ”€â”€ modules/                 # feature modules: routes â†’ controller â†’ service
+â”‚   â”‚   â”‚   â”œâ”€â”€ auth/  admin/  stores/  owner/
+â”‚   â”‚   â”œâ”€â”€ utils/queryBuilder.js    # safe dynamic WHERE / ORDER BY / pagination
+â”‚   â”‚   â”œâ”€â”€ validators/schemas.js    # Zod schemas (single source of truth)
+â”‚   â”‚   â”œâ”€â”€ app.js                   # express app
+â”‚   â”‚   â””â”€â”€ server.js                # http server + graceful shutdown
+â”‚   â””â”€â”€ tests/                       # unit tests
+â”œâ”€â”€ frontend/
+â”‚   â””â”€â”€ src/
+â”‚       â”œâ”€â”€ api/                     # axios client + typed service functions
+â”‚       â”œâ”€â”€ context/                 # AuthContext, ToastContext
+â”‚       â”œâ”€â”€ hooks/useListQuery.js    # filters + sorting + pagination state
+â”‚       â”œâ”€â”€ components/              # DataTable, StarRating, FormField, Modalâ€¦
+â”‚       â”œâ”€â”€ pages/                   # auth, admin, user, owner
+â”‚       â””â”€â”€ utils/validation.js      # mirrors backend rules
+â”œâ”€â”€ docker-compose.yml               # local PostgreSQL
+â”œâ”€â”€ render.yaml                      # Render blueprint for the API
+â””â”€â”€ .github/workflows/ci.yml
 ```
 
 Each backend feature is split into **routes** (HTTP wiring, validation, role guard), **controller** (request/response) and **service** (SQL and business rules), so the SQL never leaks into route files.
@@ -133,8 +138,8 @@ erDiagram
 Design decisions:
 - **Integrity in the database, not only the app.** Length and range rules are `CHECK` constraints, roles are a Postgres `ENUM`, and `UNIQUE (user_id, store_id)` guarantees one rating per user per store.
 - **Case-insensitive unique emails** via a unique index on `LOWER(email)`.
-- **Upsert for ratings** (`INSERT … ON CONFLICT DO UPDATE`), so submitting and modifying a rating is one idempotent `PUT`.
-- **One owner ↔ one store** enforced by `UNIQUE (owner_id)`; `ON DELETE SET NULL` keeps a store if its owner is removed, `ON DELETE CASCADE` cleans up ratings.
+- **Upsert for ratings** (`INSERT â€¦ ON CONFLICT DO UPDATE`), so submitting and modifying a rating is one idempotent `PUT`.
+- **One owner â†” one store** enforced by `UNIQUE (owner_id)`; `ON DELETE SET NULL` keeps a store if its owner is removed, `ON DELETE CASCADE` cleans up ratings.
 - **`store_rating_summary` view** computes average and count in one place, so every screen shows the same number.
 - **`updated_at` triggers** keep timestamps correct without relying on application code.
 - **Indexes** on foreign keys and on the columns used for filtering and sorting.
@@ -258,7 +263,7 @@ The app deploys as three pieces: **Neon** (PostgreSQL), **Render** (Express API)
 
 ### 2. API on Render
 1. Sign up at https://render.com with GitHub.
-2. **New → Web Service**, choose your repository.
+2. **New â†’ Web Service**, choose your repository.
 3. Settings:
    - **Root Directory:** `backend`
    - **Runtime:** Node
@@ -284,7 +289,7 @@ The start command runs the migration and seed on each boot; both are idempotent.
 
 ### 3. Frontend on Vercel
 1. Sign up at https://vercel.com with GitHub.
-2. **Add New → Project**, import the same repository.
+2. **Add New â†’ Project**, import the same repository.
 3. Settings:
    - **Root Directory:** `frontend`
    - **Framework preset:** Vite (auto-detected)
@@ -324,10 +329,11 @@ git push
 
 ## Assumptions
 
-- The name rule (20–60 characters) applies to store names as well as user names, since the brief lists it under form validations generally.
+- The name rule (20â€“60 characters) applies to store names as well as user names, since the brief lists it under form validations generally.
 - Address is required for all forms (max 400 characters).
 - A store owner owns at most one store, and a store has at most one owner. Admins can create a store without an owner; the owner dropdown lists only store owners who don't have a store yet.
 - Only normal users submit ratings; admins and owners can't rate.
 - Admins can change their own password too.
 - Emails are stored in lowercase and compared case-insensitively.
+
 
